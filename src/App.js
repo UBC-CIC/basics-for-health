@@ -1,24 +1,21 @@
-import logo from './logo.svg';
-import './App.css';
+import { Helmet } from 'react-helmet'
 
 function App() {
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+    <>
+      <div id="formContainer"></div>
+      <Helmet>
+        <link href="https://clinicaltables.nlm.nih.gov/lforms-versions/30.0.0-beta.6/webcomponent/styles.css" media="screen" rel="stylesheet" />
+        <script src="https://clinicaltables.nlm.nih.gov/lforms-versions/30.0.0-beta.6/webcomponent/assets/lib/zone.min.js"></script>
+        <script src="https://clinicaltables.nlm.nih.gov/lforms-versions/30.0.0-beta.6/webcomponent/scripts.js"></script>
+        <script src="https://clinicaltables.nlm.nih.gov/lforms-versions/30.0.0-beta.6/webcomponent/runtime-es5.js"></script>
+        <script src="https://clinicaltables.nlm.nih.gov/lforms-versions/30.0.0-beta.6/webcomponent/polyfills-es5.js"></script>
+        <script src="https://clinicaltables.nlm.nih.gov/lforms-versions/30.0.0-beta.6/webcomponent/main-es5.js"></script> 
+        <script src="https://clinicaltables.nlm.nih.gov/lforms-versions/30.0.0-beta.6/fhir/R4/lformsFHIR.min.js"></script>
+        <script src="./form.js"></script>
+      </Helmet>
+    </>
   );
 }
 
