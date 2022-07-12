@@ -1,6 +1,4 @@
-import LForms from "lforms";
-
-var formDef = {
+export const FhirQ = {
     "status": "draft",
     "name": "b4h-questionnaire",
     "title": "SOCIAL CARE PROFILE",
@@ -3264,5 +3262,3 @@ var formDef = {
     }
     ]
 }
-
-LForms.Util.addFormToPage(formDef, formContainer);
