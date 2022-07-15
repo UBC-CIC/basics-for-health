@@ -1,0 +1,20 @@
+{
+  "dev": {
+    "awscloudformation": {
+      "AuthRoleName": "amplify-basics4health-dev-160143-authRole",
+      "UnauthRoleArn": "arn:aws:iam::767210983147:role/amplify-basics4health-dev-160143-unauthRole",
+      "AuthRoleArn": "arn:aws:iam::767210983147:role/amplify-basics4health-dev-160143-authRole",
+      "Region": "ca-central-1",
+      "DeploymentBucketName": "amplify-basics4health-dev-160143-deployment",
+      "UnauthRoleName": "amplify-basics4health-dev-160143-unauthRole",
+      "StackName": "amplify-basics4health-dev-160143",
+      "StackId": "arn:aws:cloudformation:ca-central-1:767210983147:stack/amplify-basics4health-dev-160143/94efb3a0-0236-11ed-84cc-0e62de8610d0",
+      "AmplifyAppId": "d3n07cvrr34b2x"
+    },
+    "categories": {
+      "auth": {
+        "basics4health41656259": {}
+      }
+    }
+  }
+}
