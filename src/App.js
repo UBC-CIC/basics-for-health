@@ -13,7 +13,7 @@ import awsExports from './aws-exports';
 Amplify.configure(awsExports);
 
 function App() {
-  const [value, setValue] = useState();
+  const [patientID, setPatientID] = useState('');
 
   useEffect(() => {
     renderForm();
@@ -45,45 +45,56 @@ function App() {
     }
   }
 
-  // async function fhirPost() {
-  //   let base = 'https://lforms-fhir.nlm.nih.gov/baseR4';
-  //   let resourceType = '/Questionnaire';
-  //   let endpoint = base + resourceType;
-  //   let questionnaire = FhirQ;
-
-  //   axios({
-  //     method: 'post',
-  //     url: endpoint,
-  //     data: questionnaire
-  //   }).then((response) => {
-  //     console.log(response);
-  //   });
-  // }
-
   async function renderForm() {
       let formDef = FhirQ;
       window.LForms.Util.addFormToPage(formDef, 'formContainer');
   }
 
   async function loadResponse() {
-    let resourceID = "/" + value;
-    let signedURL = await signRequest('get', resourceID);
+    let searchParameter = '?subject=Patient/' + patientID;
+    let signedURL = await signRequest('get', searchParameter);
 
     await axios.get(signedURL).then((resp) => {
-        console.log(resp.data);
-        if (resp.status === 200) {
-          let fhirForm = FhirQ;
-          let lhcForm = window.LForms.Util.convertFHIRQuestionnaireToLForms(fhirForm, 'R4');
-          let formWithUserData = window.LForms.Util.mergeFHIRDataIntoLForms("QuestionnaireResponse", resp.data, lhcForm, "R4");          
-          window.LForms.Util.addFormToPage(formWithUserData, 'formContainer');
-          notify('success', 'Form loaded.');
-        } else {
-          notify('error', 'Error loading form.');
-        } 
-    }).catch(notify('error', 'Error loading form.'))
+      if (resp.data["entry"][1]["search"]["mode"] === "match") {
+        let fhirForm = FhirQ;
+        let lhcForm = window.LForms.Util.convertFHIRQuestionnaireToLForms(fhirForm, 'R4');
+        let formWithUserData = window.LForms.Util.mergeFHIRDataIntoLForms("QuestionnaireResponse", resp.data["entry"][1]["resource"], lhcForm, "R4");          
+        window.LForms.Util.addFormToPage(formWithUserData, 'formContainer');
+        notify('success', 'Form loaded.');
+      } else {
+        notify('error', 'Error loading form.');
+      } 
+    })
   }
 
-  async function storeResponse() { 
+  async function sendToHealthlake() { 
+    let searchParameter = '?subject=Patient/' + patientID;
+    let signedURL = await signRequest('get', searchParameter);
+
+    await axios.get(signedURL).then((resp) => {
+      if (resp.data["entry"].length === 1) {
+        storeResponse();
+      } else if (resp.data["entry"][1]["search"]["mode"] === "match") {
+          updateResponse(resp.data["entry"][1]["resource"]["id"]);
+      }
+    })
+  }
+
+  async function updateResponse(resourceID) {
+    let signedURL = await signRequest('put', resourceID);
+
+    await axios({
+      method: 'put',
+      url: signedURL.url,
+      headers: signedURL.headers,
+      data: signedURL.data
+    }).then((response) => {
+      console.log(response);
+      notify('success','Form updated.');
+    });
+  }
+
+  async function storeResponse() {
     let signedURL = await signRequest('post');
 
     await axios({
@@ -94,7 +105,6 @@ function App() {
     }).then((response) => {
       console.log(response);
       if (response.status === 201) {
-        setValue(response.data.id);
         notify('success','Form submitted.');
         renderForm();
       } else {
@@ -103,7 +113,7 @@ function App() {
     });
   }
 
-  async function signRequest(requestMethod, id) {
+  async function signRequest(requestMethod, param) {
     const credentials = {
       access_key: (await Auth.currentCredentials()).accessKeyId,
       secret_key: (await Auth.currentCredentials()).secretAccessKey,
@@ -114,35 +124,63 @@ function App() {
     let resourceType = 'QuestionnaireResponse';
     let endpoint = dataStore + resourceType;
 
-    if (requestMethod === 'post') {
-      let fhirQR = window.LForms.Util.getFormFHIRData('QuestionnaireResponse', 'R4');
+    let fhirQR = window.LForms.Util.getFormFHIRData('QuestionnaireResponse', 'R4');
+    fhirQR.subject = {
+      reference: "Patient/" + patientID
+    }
 
+    const serviceInfo = {
+      service: 'healthlake',
+      region: 'us-east-1'
+    };
+
+    if (requestMethod === 'post') {
       const request = {
         method: 'POST',
         url: endpoint,
         data: JSON.stringify(fhirQR)
       };
-  
-      const serviceInfo = {
-        service: 'healthlake',
-        region: 'us-east-1'
-      };
       
       let signedRequest = Signer.sign(request, credentials, serviceInfo);
       delete signedRequest.headers['host'];
-      
       return signedRequest;
+    } else if (requestMethod === 'put') {
+        let endpoint = dataStore + resourceType + '/' + param;
+        fhirQR.id = param;
+
+        const request = {
+          method: 'PUT',
+          url: endpoint,
+          data: JSON.stringify(fhirQR)
+        };
+        
+        let signedRequest = Signer.sign(request, credentials, serviceInfo);
+        delete signedRequest.headers['host'];
+        signedRequest.headers['content-type'] = 'application/json';
+        return signedRequest;
     } else {
-      let endpoint = dataStore + resourceType + id;
-      return Signer.signUrl(endpoint, credentials)
+        let endpoint = dataStore + resourceType + param;
+        return Signer.signUrl(endpoint, credentials)
+    }
+  }
+
+  function numbersOnly(e) {
+    const re = /^[0-9\b]+$/;
+
+    if (e.target.value === '' || re.test(e.target.value)) {
+      setPatientID(e.target.value);
     }
   }
 
   return (
     <>
       <Navbar />
+      <form style={{ marginLeft: '1em', marginTop: '1.5em'}}>
+        <label>Patient ID:</label>
+        <input style={{ margin: '0.5em', border: '1px solid'}} value={patientID} minLength={10} maxLength={10} required onChange={numbersOnly} />
+      </form>
       <div id="formContainer" style={{ padding: '1em' }}></div>
-      <button onClick={storeResponse} style={{ float: 'right', marginRight: '1em' }}>Submit</button>
+      <button onClick={sendToHealthlake} style={{ float: 'right', marginRight: '1em' }}>Submit</button>
       <button onClick={loadResponse} style={{ float: 'left', marginLeft: '1em' }}>Load</button>
       <ToastContainer />
     </>
