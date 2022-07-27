@@ -1,8 +1,11 @@
-import { AppBar, Toolbar, Button, Typography } from "@material-ui/core";
+import { AppBar, Toolbar, Button, Typography } from "@mui/material";
+import Sidebar from './sidebar';
 import { Auth } from 'aws-amplify';
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 
 export default function Navbar() {
+    const [admin, setAdmin] = useState(true);
+
     useEffect(() => {
         welcomeUser();
     })
@@ -21,10 +24,9 @@ export default function Navbar() {
     return (
         <AppBar position="static">
             <Toolbar>
+                { admin ? <Sidebar /> : null}
                 <Typography id="headText" style={{ flex: 1 }}></Typography>
-                <div>
-                    <Button onClick={signOut} variant="outlined" color="inherit">Sign out</Button>
-                </div>
+                <Button onClick={signOut} variant="outlined" color="inherit">Sign out</Button>
             </Toolbar>
         </AppBar>
     )
