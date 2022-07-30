@@ -1,8 +1,9 @@
 import { useEffect, useState } from 'react';
 import { FhirQ } from '../questionnaire';
-import { Notify } from '../Helpers/notification'
-import { ToastContainer } from 'react-toastify';
 import axios from 'axios';
+import { Alert, Collapse, Button, TextField, IconButton, InputAdornment } from '@mui/material'
+import SendIcon from '@mui/icons-material/Send';
+import SearchIcon from '@mui/icons-material/Search'
 import { Auth, Signer } from 'aws-amplify';
 
 import 'react-toastify/dist/ReactToastify.css';
@@ -10,7 +11,10 @@ import 'react-toastify/dist/ReactToastify.css';
 function Form() {
   const [patientID, setPatientID] = useState('');
   const [buttonClicked, setButtonClicked] = useState('');
-  const [error, setError] = useState('');
+  const [isFieldError, setIsFieldError] = useState(false);
+  const [errorText, setErrorText] = useState('');
+  const [alert, setAlert] = useState(false);
+  const [alertContent, setAlertContent] = useState('');
 
   useEffect(() => {
     renderForm();
@@ -33,7 +37,8 @@ function Form() {
         let lhcForm = window.LForms.Util.convertFHIRQuestionnaireToLForms(fhirForm, 'R4');
         let formWithUserData = window.LForms.Util.mergeFHIRDataIntoLForms("QuestionnaireResponse", resp.data["entry"][1]["resource"], lhcForm, "R4");          
         window.LForms.Util.addFormToPage(formWithUserData, 'formContainer');
-        Notify('success', 'Form loaded.');
+        setAlertContent('Form loaded');
+        setAlert(true);
       }
     })
   }
@@ -61,7 +66,8 @@ function Form() {
       data: signedURL.data
     }).then(() => {
       window.scrollTo({top: 0});
-      Notify('success','Form updated.');
+      setAlertContent('Form updated');
+      setAlert(true);
     });
   }
 
@@ -76,9 +82,10 @@ function Form() {
     }).then((response) => {
       window.scrollTo({top: 0});
       if (response.status === 201) {
-        Notify('success','Form submitted.');
+        setAlertContent('Form submitted');
+        setAlert(true);
       } else {
-        Notify('error', 'Error submitting form.');
+        console.log(response)
       }
     });
   }
@@ -140,17 +147,11 @@ function Form() {
     if (e.target.value === '' || re.test(e.target.value)) {
       setPatientID(e.target.value);
     }
-    clearField();
   } 
 
-  function clearField() {
-    setError('');
-    document.querySelector('#patient-id').style.border = '1px solid';
-  }
-
   function fieldError(text) {
-    setError(text);
-    document.querySelector('#patient-id').style.border = '1px solid #cc0000';
+    setIsFieldError(true);
+    setErrorText(text)
     document.querySelector('#patient-id').scrollIntoView({block: 'center', inline: 'start'});
   }
 
@@ -160,8 +161,10 @@ function Form() {
     if (patientID === '') {
       fieldError('Field required');
     } else if (patientID.length !== 10) {
-      fieldError('Invalid input');
+      fieldError('Please enter a valid ID number');
     } else {
+      setIsFieldError(false);
+      setErrorText('');
       if (buttonClicked === 'store') {
         sendToHealthlake();
       } else {
@@ -172,17 +175,28 @@ function Form() {
 
   return (
     <>
+      {alert ? <Collapse in={alert}><Alert severity='success' onClose={() => setAlert(false)}>{alertContent}</Alert></Collapse> : <></> }
       <form style={{ marginLeft: '1em', marginTop: '1.5em' }} onSubmit={ handleSubmit }>
-        <div style={{ display: 'inline-block' }}>
-          <p style={{ color: '#cc0000', textAlign: 'center', margin: 0 }}>{ error }</p>
-          <label>Patient ID:</label>
-          <input id='patient-id' style={{ margin: '0.5em', border: '1px solid' }} value={ patientID } maxLength={ 10 } onChange={ numbersOnly } />
-          <button type='submit' onClick={() => setButtonClicked('load')}>Load</button>
-        </div>
+        <TextField
+            id='patient-id'
+            value={patientID}
+            label="Patient ID"
+            onChange={numbersOnly}
+            error={isFieldError}
+            helperText={errorText}
+            variant="outlined"
+            size="small"
+            InputProps={{autoComplete: 'off', endAdornment: (
+              <InputAdornment position="end">
+                <IconButton edge="end" type='submit' onClick={() => setButtonClicked('load')}>
+                  <SearchIcon />
+                </IconButton>
+              </InputAdornment>
+            )}}
+        />
         <div id="formContainer" style={{ paddingTop: '1em', paddingRight: '1em', paddingBottom: '1em' }}></div>
-        <button type='submit' onClick={() => setButtonClicked('store')} style={{ float: 'right', marginRight: '1em' }}>Submit</button>
+        <Button type='submit' variant="contained" style={{ float: 'right', marginRight: '1em' }} endIcon={<SendIcon />} onClick={() => setButtonClicked('store')}>Submit</Button>
       </form>
-      <ToastContainer />
     </>
   );
 }

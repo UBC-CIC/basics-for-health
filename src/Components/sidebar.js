@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { Drawer, List, ListItemText, Box, IconButton, ListItem } from '@mui/material'
-import { Menu } from '@material-ui/icons';
+import { Menu } from '@mui/icons-material';
 import { useNavigate } from "react-router-dom";
 
 export default function Sidebar() {

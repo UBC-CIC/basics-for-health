@@ -14,6 +14,12 @@
     "categories": {
       "auth": {
         "basics4health41656259": {}
+      },
+      "function": {
+        "AdminQueries4a61d8cc": {
+          "deploymentBucketName": "amplify-basics4health-dev-160143-deployment",
+          "s3Key": "amplify-builds/AdminQueries4a61d8cc-74696e564f733666776b-build.zip"
+        }
       }
     }
   }
