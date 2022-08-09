@@ -3,7 +3,7 @@ import { AppBar, Toolbar, Button, Typography } from "@mui/material";
 import Sidebar from './sidebar';
 import { Auth } from 'aws-amplify';
 import { useEffect } from "react";
-import AdminStatus from "../adminStatus";
+// import AdminStatus from "../adminStatus";
 
 export default function Navbar() {
     const [admin, setAdmin] = useState(false);
@@ -25,17 +25,17 @@ export default function Navbar() {
     }
 
     async function isAdmin() {
-        // let user = await Auth.currentAuthenticatedUser();
-        // let group = user.signInUserSession.accessToken.payload['cognito:groups'];
-        // if (group === undefined) {
-        //     setAdmin(false);
-        // } else {
-        //     if (group.includes('Admins')) {
-        //         setAdmin(true);
-        //     }
-        // }
+        let user = await Auth.currentAuthenticatedUser();
+        let group = user.signInUserSession.accessToken.payload['cognito:groups'];
+        if (group === undefined) {
+            setAdmin(false);
+        } else {
+            if (group.includes('Admins')) {
+                setAdmin(true);
+            }
+        }
         // let adminStatus = await IsAdmin();
-        setAdmin(await AdminStatus());
+        // setAdmin(await AdminStatus());
     }
 
     return (

@@ -63,7 +63,7 @@ function Admin() {
                     spacing={2}
                     >
                     <Grid item xs={12} align="center">
-                        <h2>Authorize administrative privilages for another user</h2>
+                        <h2>Authorize administrative privileges for another user</h2>
                     </Grid>
                     <Grid item xs={11} sm={7} md={6} lg={4.7} align="center">
                         <TextField

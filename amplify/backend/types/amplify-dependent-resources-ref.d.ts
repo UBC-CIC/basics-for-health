@@ -27,5 +27,11 @@ export type AmplifyDependentResourcesAttributes = {
             "ApiName": "string",
             "ApiId": "string"
         }
+    },
+    "storage": {
+        "b4hstorage": {
+            "BucketName": "string",
+            "Region": "string"
+        }
     }
 }

@@ -6,9 +6,7 @@ import SendIcon from '@mui/icons-material/Send';
 import SearchIcon from '@mui/icons-material/Search'
 import { Auth, Signer } from 'aws-amplify';
 
-import 'react-toastify/dist/ReactToastify.css';
-
-function Form() {
+function Form(thistest) {
   const [patientID, setPatientID] = useState('');
   const [buttonClicked, setButtonClicked] = useState('');
   const [isFieldError, setIsFieldError] = useState(false);

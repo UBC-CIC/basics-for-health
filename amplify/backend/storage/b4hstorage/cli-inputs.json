@@ -1,0 +1,16 @@
+{
+  "resourceName": "b4hstorage",
+  "policyUUID": "b68c93b5",
+  "bucketName": "basics4health",
+  "storageAccess": "auth",
+  "guestAccess": [],
+  "authAccess": [],
+  "triggerFunction": "NONE",
+  "groupAccess": {
+    "Admins": [
+      "CREATE_AND_UPDATE",
+      "READ",
+      "DELETE"
+    ]
+  }
+}

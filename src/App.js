@@ -10,15 +10,22 @@ import '@aws-amplify/ui-react/styles.css';
 import 'react-toastify/dist/ReactToastify.css';
 
 import awsExports from './aws-exports';
+import { useEffect, useState } from 'react';
 Amplify.configure(awsExports);
 
-function App() {
+function App(props) {
+  const client = props.client;
+  const [patient, setPatient] = useState();
+
+  useEffect(() => {
+    client.patient.read().then((patient) => setPatient(patient));
+  }, [client.patient]);
   
   return (
     <>
       <Navbar />
       <Routes>
-        <Route path="/" element={<Form />} />
+        <Route path="/" element={<Form param={patient} />} />
         <Route path="/upload" element={<Upload />} />
         <Route path='/admin' element={<Admin />} />
       </Routes>
