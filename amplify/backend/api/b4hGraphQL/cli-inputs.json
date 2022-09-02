@@ -1,0 +1,12 @@
+{
+  "version": 1,
+  "serviceConfiguration": {
+    "apiName": "b4hGraphQL",
+    "serviceName": "AppSync",
+    "gqlSchemaPath": "C:\\Users\\eliu10\\basics4health\\amplify\\backend\\api\\b4hGraphQL\\schema.graphql",
+    "defaultAuthType": {
+      "mode": "AMAZON_COGNITO_USER_POOLS",
+      "cognitoUserPoolId": "authbasics4health41656259"
+    }
+  }
+}

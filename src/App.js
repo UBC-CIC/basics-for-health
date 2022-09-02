@@ -15,11 +15,22 @@ Amplify.configure(awsExports);
 
 function App(props) {
   const client = props.client;
-  const [patient, setPatient] = useState();
+  const [patient, setPatient] = useState('');
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    client.patient.read().then((patient) => setPatient(patient));
-  }, [client.patient]);
+    getPatient();
+  }, []);
+
+  async function getPatient() {
+    let pat = await client.patient.read();
+    setPatient(pat);
+    setLoading(false);
+  }
+
+  if (loading) {
+    return <span>Loading...</span>
+  }
   
   return (
     <>

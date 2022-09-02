@@ -4,8 +4,9 @@
   "bucketName": "basics4health",
   "storageAccess": "auth",
   "guestAccess": [],
-  "authAccess": [],
-  "triggerFunction": "NONE",
+  "authAccess": [
+    "READ"
+  ],
   "groupAccess": {
     "Admins": [
       "CREATE_AND_UPDATE",

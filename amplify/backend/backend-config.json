@@ -79,6 +79,30 @@
           ]
         }
       ]
+    },
+    "b4hGraphQL": {
+      "service": "AppSync",
+      "providerPlugin": "awscloudformation",
+      "dependsOn": [
+        {
+          "category": "auth",
+          "resourceName": "basics4health41656259",
+          "attributes": [
+            "UserPoolId"
+          ]
+        }
+      ],
+      "output": {
+        "authConfig": {
+          "defaultAuthentication": {
+            "authenticationType": "AMAZON_COGNITO_USER_POOLS",
+            "userPoolConfig": {
+              "userPoolId": "authbasics4health41656259"
+            }
+          },
+          "additionalAuthenticationProviders": []
+        }
+      }
     }
   },
   "storage": {
@@ -102,5 +126,6 @@
         }
       ]
     }
-  }
+  },
+  "custom": {}
 }

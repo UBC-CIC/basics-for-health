@@ -2,11 +2,13 @@ import { useState } from "react";
 import { AppBar, Toolbar, Button, Typography } from "@mui/material";
 import Sidebar from './sidebar';
 import { Auth } from 'aws-amplify';
+import { useNavigate } from 'react-router-dom';
 import { useEffect } from "react";
-// import AdminStatus from "../adminStatus";
+import AdminStatus from "../Helpers/adminStatus";
 
 export default function Navbar() {
     const [admin, setAdmin] = useState(false);
+    const navigate = useNavigate();
 
     useEffect(() => {
         welcomeUser();
@@ -21,21 +23,12 @@ export default function Navbar() {
 
     async function signOut() {
         await Auth.signOut();
+        navigate("/");
         window.location.reload();
     }
 
     async function isAdmin() {
-        let user = await Auth.currentAuthenticatedUser();
-        let group = user.signInUserSession.accessToken.payload['cognito:groups'];
-        if (group === undefined) {
-            setAdmin(false);
-        } else {
-            if (group.includes('Admins')) {
-                setAdmin(true);
-            }
-        }
-        // let adminStatus = await IsAdmin();
-        // setAdmin(await AdminStatus());
+        setAdmin(await AdminStatus());
     }
 
     return (
