@@ -6,13 +6,10 @@ export const onCreateForm = /* GraphQL */ `
     onCreateForm(owner: $owner) {
       id
       name
+      version
       otherUser
       owner
-      file {
-        bucket
-        region
-        key
-      }
+      formID
       createdAt
       updatedAt
     }
@@ -23,13 +20,10 @@ export const onUpdateForm = /* GraphQL */ `
     onUpdateForm(owner: $owner) {
       id
       name
+      version
       otherUser
       owner
-      file {
-        bucket
-        region
-        key
-      }
+      formID
       createdAt
       updatedAt
     }
@@ -40,13 +34,10 @@ export const onDeleteForm = /* GraphQL */ `
     onDeleteForm(owner: $owner) {
       id
       name
+      version
       otherUser
       owner
-      file {
-        bucket
-        region
-        key
-      }
+      formID
       createdAt
       updatedAt
     }

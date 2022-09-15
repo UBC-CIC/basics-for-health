@@ -9,13 +9,10 @@ export const createForm = /* GraphQL */ `
     createForm(input: $input, condition: $condition) {
       id
       name
+      version
       otherUser
       owner
-      file {
-        bucket
-        region
-        key
-      }
+      formID
       createdAt
       updatedAt
     }
@@ -29,13 +26,10 @@ export const updateForm = /* GraphQL */ `
     updateForm(input: $input, condition: $condition) {
       id
       name
+      version
       otherUser
       owner
-      file {
-        bucket
-        region
-        key
-      }
+      formID
       createdAt
       updatedAt
     }
@@ -49,13 +43,10 @@ export const deleteForm = /* GraphQL */ `
     deleteForm(input: $input, condition: $condition) {
       id
       name
+      version
       otherUser
       owner
-      file {
-        bucket
-        region
-        key
-      }
+      formID
       createdAt
       updatedAt
     }

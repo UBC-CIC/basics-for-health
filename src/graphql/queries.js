@@ -6,13 +6,10 @@ export const getForm = /* GraphQL */ `
     getForm(id: $id) {
       id
       name
+      version
       otherUser
       owner
-      file {
-        bucket
-        region
-        key
-      }
+      formID
       createdAt
       updatedAt
     }
@@ -28,13 +25,10 @@ export const listForms = /* GraphQL */ `
       items {
         id
         name
+        version
         otherUser
         owner
-        file {
-          bucket
-          region
-          key
-        }
+        formID
         createdAt
         updatedAt
       }
@@ -45,6 +39,7 @@ export const listForms = /* GraphQL */ `
 export const getFormByName = /* GraphQL */ `
   query GetFormByName(
     $name: String!
+    $version: ModelIntKeyConditionInput
     $sortDirection: ModelSortDirection
     $filter: ModelFormFilterInput
     $limit: Int
@@ -52,6 +47,7 @@ export const getFormByName = /* GraphQL */ `
   ) {
     getFormByName(
       name: $name
+      version: $version
       sortDirection: $sortDirection
       filter: $filter
       limit: $limit
@@ -60,13 +56,10 @@ export const getFormByName = /* GraphQL */ `
       items {
         id
         name
+        version
         otherUser
         owner
-        file {
-          bucket
-          region
-          key
-        }
+        formID
         createdAt
         updatedAt
       }

@@ -1,15 +1,11 @@
 
 type Form @model @auth(rules: [{ allow: owner }, { allow: private, operations: [read] }]) {
   id: ID!
-  name: String @index(name: "byFormName", queryField: "getFormByName")
+  name: String @index(name: "byFormName", queryField: "getFormByName", sortKeyFields: ["version"])
+  version: Int
   otherUser: String
   owner: String
-  file: S3Object
+  formID: ID
 }
 
-type S3Object {
-  bucket: String!
-  region: String!
-  key: String!
-}
  

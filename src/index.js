@@ -10,8 +10,8 @@ const root = ReactDOM.createRoot(document.getElementById('root'));
 
 const smartFhirLaunch = () => {
   FHIR.oauth2.init({
-    clientId: 'test',
-    scope: 'launch/patient openid profile'
+    clientId: 'b1c89b87-db4f-440a-8e5e-2e3dd8e43992',
+    scope: 'launch launch/patient patient/Patient.read openid profile online_access'
   })
   .then(client => {
     root.render(
