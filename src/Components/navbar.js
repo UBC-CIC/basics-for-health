@@ -7,37 +7,37 @@ import { useEffect } from "react";
 import AdminStatus from "../Helpers/adminStatus";
 
 export default function Navbar() {
-    const [admin, setAdmin] = useState(false);
-    const navigate = useNavigate();
+  const [admin, setAdmin] = useState(false);
+  const navigate = useNavigate();
 
-    useEffect(() => {
-        welcomeUser();
-        isAdmin();
-    })
+  useEffect(() => {
+    welcomeUser();
+    isAdmin();
+  })
 
-    async function welcomeUser() {
-        let user = await Auth.currentAuthenticatedUser();
-        let container = document.getElementById('headText');
-        container.innerHTML = 'Welcome, ' + user.username + '!';
-    }
+  async function welcomeUser() {
+    let user = await Auth.currentAuthenticatedUser();
+    let container = document.getElementById('headText');
+    container.innerHTML = 'Welcome, ' + user.username + '!';
+  }
 
-    async function signOut() {
-        await Auth.signOut();
-        navigate("/");
-        window.location.reload();
-    }
+  async function signOut() {
+    await Auth.signOut();
+    navigate("/");
+    window.location.reload();
+  }
 
-    async function isAdmin() {
-        setAdmin(await AdminStatus());
-    }
+  async function isAdmin() {
+    setAdmin(await AdminStatus());
+  }
 
-    return (
-        <AppBar position="static">
-            <Toolbar>
-                { admin ? <Sidebar /> : null}
-                <Typography id="headText" style={{ flex: 1 }}></Typography>
-                <Button onClick={signOut} variant="outlined" color="inherit">Sign out</Button>
-            </Toolbar>
-        </AppBar>
-    )
+  return (
+    <AppBar position="static">
+      <Toolbar>
+        { admin ? <Sidebar /> : null}
+        <Typography id="headText" style={{ flex: 1 }}></Typography>
+        <Button onClick={signOut} variant="outlined" color="inherit">Sign out</Button>
+      </Toolbar>
+    </AppBar>
+  )
 }

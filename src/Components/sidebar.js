@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Drawer, List, ListItemText, Box, IconButton, ListItem } from '@mui/material'
+import { Drawer, List, ListItemText, Box, IconButton, ListItem } from '@mui/material';
 import { Menu } from '@mui/icons-material';
 import { useNavigate } from "react-router-dom";
 

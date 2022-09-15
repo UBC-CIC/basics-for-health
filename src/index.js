@@ -22,7 +22,7 @@ const smartFhirLaunch = () => {
       </React.StrictMode>
     );
   })
-}
+};
 
 smartFhirLaunch();
 
