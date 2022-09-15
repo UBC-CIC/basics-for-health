@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { Collapse, Alert, Button, Box, Stack, TextField, Tabs, Tab, FormControl, InputLabel, Select, MenuItem} from "@mui/material";
 import { UploadFile } from "@mui/icons-material";
-import { Storage, API, graphqlOperation } from 'aws-amplify';
+import { Auth, Signer, Storage, API, graphqlOperation } from 'aws-amplify';
 import axios from 'axios'
 import { createForm } from '../graphql/mutations';
 import { listForms, getFormByName } from '../graphql/queries';
@@ -23,6 +23,9 @@ export default function Upload() {
   const [value, setValue] = useState(0);
   const [availableForms, setAvailableForms] = useState([]);
   const [selectedForm, setSelectedForm] = useState('');
+
+  const [ts, setTs] = useState(null);
+
 
   useEffect(() => {
     async function existingForms() {
@@ -65,12 +68,12 @@ export default function Upload() {
         setFieldError(false);
         setErrorText('');
         try {
-            let endpoint = 'http://localhost:4004/hapi-fhir-jpaserver/fhir/Questionnaire'
+            let req = await signRequest(false)
             axios({
               method: 'post',
-              headers: {'Content-Type': 'application/json'},
-              url: endpoint,
-              data: file
+              url: req.url,
+              headers: req.headers,
+              data: req.data
             }).then(async (response) => {
               console.log(response);
               const formData = {
@@ -81,6 +84,22 @@ export default function Upload() {
                   formID: response.data.id
                 }
               }
+            // let endpoint = 'http://localhost:4004/hapi-fhir-jpaserver/fhir/Questionnaire'
+            // axios({
+            //   method: 'post',
+            //   headers: {'Content-Type': 'application/json'},
+            //   url: endpoint,
+            //   data: file
+            // }).then(async (response) => {
+            //   console.log(response);
+            //   const formData = {
+            //     input: {
+            //       name: formTitle,
+            //       version: 1,
+            //       otherUser: formUser,
+            //       formID: response.data.id
+            //     }
+            //   }
               await API.graphql(graphqlOperation(createForm, formData));
               setAlertType('success')
               setAlert(true);
@@ -117,6 +136,43 @@ export default function Upload() {
     }
   }
 
+  async function signRequest(isUpdate) {
+    const credentials = {
+        access_key: (await Auth.currentCredentials()).accessKeyId,
+        secret_key: (await Auth.currentCredentials()).secretAccessKey,
+        session_token: (await Auth.currentCredentials()).sessionToken
+    };
+
+    let dataStore = 'https://healthlake.us-east-1.amazonaws.com/datastore/92641762d5c7ea1f301847e4b3633356/r4/Questionnaire';
+
+    const serviceInfo = {
+        service: 'healthlake',
+        region: 'us-east-1'
+    };
+
+    const fr = new FileReader()
+
+    if (isUpdate) {
+      fr.readAsText(updateFile)
+    } else {
+      fr.readAsText(file)
+    }
+    
+    fr.onload = function() {
+      setTs(fr.result)
+    }
+    const request = {
+      method: 'POST',
+      url: dataStore,
+      data: ts
+    };
+    
+    let signedRequest = Signer.sign(request, credentials, serviceInfo);
+    delete signedRequest.headers['host'];
+    signedRequest.headers['content-type'] = 'application/json';
+    return signedRequest;
+  }
+
   async function handleFormUpdate(e) {
     e.preventDefault();
     let file = document.getElementById('updateFile')
@@ -132,13 +188,15 @@ export default function Upload() {
           let chosenForm = await API.graphql(graphqlOperation(getFormByName, {name: selectedForm, sortDirection: 'DESC', limit: 1}));
           let formName = chosenForm.data.getFormByName.items[0].name;
           let newVersion = chosenForm.data.getFormByName.items[0].version + 1;
-          let endpoint = 'http://localhost:4004/hapi-fhir-jpaserver/fhir/Questionnaire'
-        
+          // let endpoint = 'http://localhost:4004/hapi-fhir-jpaserver/fhir/Questionnaire'
+
+          let req = await signRequest(true)
+
           axios({
             method: 'post',
-            headers: {'Content-Type': 'application/json'},
-            url: endpoint,
-            data: updateFile
+            url: req.url,
+            headers: req.headers,
+            data: req.data
           }).then(async (response) => {
             console.log(response);
             const formData = {
@@ -148,6 +206,21 @@ export default function Upload() {
                 formID: response.data.id
               }
             }
+
+          // axios({
+          //   method: 'post',
+          //   headers: {'Content-Type': 'application/json'},
+          //   url: endpoint,
+          //   data: updateFile
+          // }).then(async (response) => {
+          //   console.log(response);
+          //   const formData = {
+          //     input: {
+          //       name: formName,
+          //       version: newVersion,
+          //       formID: response.data.id
+          //     }
+          //   }
             await API.graphql(graphqlOperation(createForm, formData));
             setAlertType('success')
             setAlert(true);
