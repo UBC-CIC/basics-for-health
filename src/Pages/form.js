@@ -3,7 +3,7 @@ import axios from 'axios';
 import { Alert, Collapse, Button, FormControl, InputLabel, Select, MenuItem, TextField } from '@mui/material'
 import SendIcon from '@mui/icons-material/Send';
 import AdminStatus from '../Helpers/adminStatus';
-import { Auth, Signer, Storage, API, graphqlOperation } from 'aws-amplify';
+import { Auth, Signer, API, graphqlOperation } from 'aws-amplify';
 import { listForms, getFormByName } from '../graphql/queries';
 
 function Form(props) {
@@ -15,7 +15,9 @@ function Form(props) {
   const [alert, setAlert] = useState(false);
   const [alertContent, setAlertContent] = useState('');
   const [version, setVersion] = useState();
-  const [fVersion, setFVersion] = useState(1);
+  const [formVersion, setFormVersion] = useState(1);
+
+  const questionnaireEndpoint = 'https://healthlake.us-east-1.amazonaws.com/datastore/92641762d5c7ea1f301847e4b3633356/r4/Questionnaire/';
 
   useEffect(() => {
     fetchForms()
@@ -32,11 +34,8 @@ function Form(props) {
       } else {
         forms = await API.graphql(graphqlOperation(listForms, {filter: {otherUser: {eq: user.username}}}))
       }
-      
-      // let formNames = forms.data.listForms.items;
-      // setAvailableForms(formNames);
-      let x = [...new Set(forms.data.listForms.items.map((form)=>form.name))]
-      setAvailableForms(x);
+      let formNames = [...new Set(forms.data.listForms.items.map((form)=>form.name))]
+      setAvailableForms(formNames);
     } catch (error) {
       console.log(error)
     }
@@ -49,53 +48,11 @@ function Form(props) {
   }
 
   async function loadResponse() {
-    // let formID = await getFormID();
-    // let base = 'http://localhost:4004/hapi-fhir-jpaserver/fhir/Questionnaire/'
-    // let endpoint = base + formID; 
-    // axios.get(endpoint).then(async (resp) => {
-    //   let endpoint = await getEndpoint('get')
-    //   axios.get(endpoint).then((response) => {
-    //     console.log(response)
-    //     let lhcForm = window.LForms.Util.convertFHIRQuestionnaireToLForms(resp.data, 'R4');
-    //     let formWithUserData = window.LForms.Util.mergeFHIRDataIntoLForms("QuestionnaireResponse", response.data.entry[0].resource, lhcForm, "R4");          
-    //     window.LForms.Util.addFormToPage(formWithUserData, 'formContainer');
-    //     setFormLoaded(true);
-    //   }).catch((error) => {
-    //     console.log(error)
-    //     window.LForms.Util.addFormToPage(resp.data, 'formContainer');
-    //     setFormLoaded(true);
-    //   });
-    // }).catch((error) => {
-    //   console.log(error)
-    // })
-
-    
-    // let s3Key = await getS3Key();
-    // let formDef = await Storage.get(s3Key, { download: true });
-    // let formResult = await formDef.Body.text()
-    // let formObj = JSON.parse(formResult)
-
-    // let signedURL = await signRequest('get');
-
-    // await axios.get(signedURL).then((resp) => {
-    //   console.log(resp)
-    //   if (resp.data["entry"].length === 1) {
-    //     window.LForms.Util.addFormToPage(formResult, 'formContainer');
-    //     setFormLoaded(true);
-    //   } else if (resp.data["entry"][1]["search"]["mode"] === "match") {
-    //     let lhcForm = window.LForms.Util.convertFHIRQuestionnaireToLForms(formObj, 'R4');
-    //     let formWithUserData = window.LForms.Util.mergeFHIRDataIntoLForms("QuestionnaireResponse", resp.data["entry"][1]["resource"], lhcForm, "R4");          
-    //     window.LForms.Util.addFormToPage(formWithUserData, 'formContainer');
-    //     setFormLoaded(true);
-    //   }
-    // })
-
     let questionnaireEndpoint = await signRequestQuestionnaire()
     axios.get(questionnaireEndpoint).then(async (resp) => {
       let signedURL = await signRequest('get');
 
       axios.get(signedURL).then((response) => {
-        console.log(response)
         if (response.data["entry"].length === 1) {
           window.LForms.Util.addFormToPage(resp.data, 'formContainer');
           setFormLoaded(true);
@@ -106,7 +63,6 @@ function Form(props) {
           setFormLoaded(true);
         }
       }).catch((error) => {
-        console.log(error)
         window.LForms.Util.addFormToPage(resp.data, 'formContainer');
         setFormLoaded(true);
       });
@@ -117,55 +73,29 @@ function Form(props) {
 
   async function signRequestQuestionnaire() {
     const credentials = {
-        access_key: (await Auth.currentCredentials()).accessKeyId,
-        secret_key: (await Auth.currentCredentials()).secretAccessKey,
-        session_token: (await Auth.currentCredentials()).sessionToken
+      access_key: (await Auth.currentCredentials()).accessKeyId,
+      secret_key: (await Auth.currentCredentials()).secretAccessKey,
+      session_token: (await Auth.currentCredentials()).sessionToken
     };
-
-    let dataStore = 'https://healthlake.us-east-1.amazonaws.com/datastore/92641762d5c7ea1f301847e4b3633356/r4/Questionnaire/';
     let formID = await getFormID()
-    let endpoint = dataStore + formID;
+    let endpoint = questionnaireEndpoint + formID;
   
     return Signer.signUrl(endpoint, credentials)
   }
 
   async function sendToHealthlake() { 
-    // let endpoint = await getEndpoint('get')
-
-    // axios.get(endpoint).then((resp) => {
-    //   console.log(resp)
-    //   if (resp.data.entry === undefined) {
-    //     storeResponse();
-    //   } else {
-    //     updateResponse(resp.data.entry[0].resource.id);
-    //   }
-    // }).catch((error) => {
-    //   console.log(error)
-    // })
     let signedURL = await signRequest('get');
 
     axios.get(signedURL).then((resp) => {
-      console.log(resp)
       if (resp.data["entry"].length === 1) {
         storeResponse();
       } else if (resp.data["entry"][1]["search"]["mode"] === "match") {
         updateResponse(resp.data["entry"][1]["resource"]["id"]);
       }
     })
-    
   }
 
   async function updateResponse(resourceID) {
-    // let request = await getEndpoint('put', resourceID);
-
-    // axios(request).then((response) => {
-    //   console.log(response);
-    //   window.scrollTo({top: 0});
-    //   if (response.status === 200) {
-    //     setAlertContent('Answers updated');
-    //     setAlert(true);
-    //   }
-    // });
     let signedURL = await signRequest('put', resourceID);
 
     axios({
@@ -181,16 +111,6 @@ function Form(props) {
   }
 
   async function storeResponse() {
-    // let request = await getEndpoint('post');
-
-    // axios(request).then((response) => {
-    //   console.log(response);
-    //   window.scrollTo({top: 0});
-    //   if (response.status === 201) {
-    //     setAlertContent('Answers submitted');
-    //     setAlert(true);
-    //   }
-    // });
     let signedURL = await signRequest('post');
 
     axios({
@@ -203,58 +123,16 @@ function Form(props) {
       if (response.status === 201) {
         setAlertContent('Form submitted');
         setAlert(true);
-      } else {
-        console.log(response)
       }
     });
   }
 
-  // async function getEndpoint(requestMethod, param) {
-  //   let dataStore = 'http://localhost:4004/hapi-fhir-jpaserver/fhir/'
-  //   let resourceType = 'QuestionnaireResponse';
-  //   let baseEndpoint = dataStore + resourceType;
-
-  //   let formID = await getFormID()
-
-  //   if (requestMethod === 'post') {
-  //     let fhirQR = window.LForms.Util.getFormFHIRData('QuestionnaireResponse', 'R4');
-  //     fhirQR.subject = {
-  //       reference: "Patient/" + patientID
-  //     }
-  //     fhirQR.questionnaire = 'http://localhost:4004/hapi-fhir-jpaserver/fhir/Questionnaire/' + formID
-
-  //     const request = {
-  //       method: 'post',
-  //       headers: {'Content-Type': 'application/json'},
-  //       url: baseEndpoint,
-  //       data: JSON.stringify(fhirQR)
-  //     };
-  //     return request;
-  //   } else if (requestMethod === 'put') {
-  //     let endpoint = baseEndpoint + '/' + param;
-  //     let fhirQR = window.LForms.Util.getFormFHIRData('QuestionnaireResponse', 'R4');
-  //     fhirQR.id = param;
-  //     const request = {
-  //       method: 'put',
-  //       headers: {'Content-Type': 'application/json'},
-  //       url: endpoint,
-  //       data: JSON.stringify(fhirQR)
-  //     };
-  //     return request;
-  //   } else if (requestMethod === 'get') {
-  //     let searchParam = '?subject=Patient/' + patientID + '&questionnaire=http://localhost:4004/hapi-fhir-jpaserver/fhir/Questionnaire/' + formID
-  //     let endpoint = baseEndpoint + searchParam;
-  //     return endpoint
-  //   }
-  // }
-
-  async function getFormVersion(e) {
-    const f = e.target.value;
-    setSelectedForm(f);
-
-    let chosenForm = await API.graphql(graphqlOperation(getFormByName, {name: f, sortDirection: 'DESC', limit: 1}));
-    let formVersion = chosenForm.data.getFormByName.items[0].version;
-    setFVersion(formVersion)
+  async function handleFormSelection(e) {
+    const formSelected = e.target.value;
+    setSelectedForm(formSelected);
+    let chosenForm = await API.graphql(graphqlOperation(getFormByName, {name: formSelected, sortDirection: 'DESC', limit: 1}));
+    let chosenFormVersion = chosenForm.data.getFormByName.items[0].version;
+    setFormVersion(chosenFormVersion)
   }
 
   async function getFormID() {
@@ -263,99 +141,82 @@ function Form(props) {
     return id
   }
 
-  async function signRequest(requestMethod, param) {
+  async function signRequest(requestMethod, responseID) {
     const credentials = {
-        access_key: (await Auth.currentCredentials()).accessKeyId,
-        secret_key: (await Auth.currentCredentials()).secretAccessKey,
-        session_token: (await Auth.currentCredentials()).sessionToken
+      access_key: (await Auth.currentCredentials()).accessKeyId,
+      secret_key: (await Auth.currentCredentials()).secretAccessKey,
+      session_token: (await Auth.currentCredentials()).sessionToken
     };
 
-    let dataStore = 'https://healthlake.us-east-1.amazonaws.com/datastore/92641762d5c7ea1f301847e4b3633356/r4/';
-    let resourceType = 'QuestionnaireResponse';
-    let endpoint = dataStore + resourceType;
-
+    let dataStore = 'https://healthlake.us-east-1.amazonaws.com/datastore/92641762d5c7ea1f301847e4b3633356/r4/QuestionnaireResponse';
     let formID = await getFormID()
-    // let formURL = await getS3URL();
 
     const serviceInfo = {
-        service: 'healthlake',
-        region: 'us-east-1'
+      service: 'healthlake',
+      region: 'us-east-1'
     };
 
     if (requestMethod === 'post') {
-        let dataStore = 'https://healthlake.us-east-1.amazonaws.com/datastore/92641762d5c7ea1f301847e4b3633356/r4/Questionnaire/';
-        let fhirQR = window.LForms.Util.getFormFHIRData('QuestionnaireResponse', 'R4');
-        fhirQR.subject = {
-          reference: "Patient/" + patientID
+      let fhirQR = window.LForms.Util.getFormFHIRData('QuestionnaireResponse', 'R4');
+      fhirQR.subject = {
+        reference: "Patient/" + patientID
+      }
+      fhirQR.meta.tag = [
+        {
+          "code": "lformsVersion: 30.0.0"
+        },
+        {
+          "code": questionnaireEndpoint + formID
         }
-        fhirQR.meta.tag = [
-          {
-            "code": "lformsVersion: 30.0.0"
-          },
-          {
-            "code": dataStore + formID
-          }
-        ]
-        fhirQR.questionnaire = dataStore + formID
-        const request = {
+      ]
+      // fhirQR.questionnaire = questionnaireEndpoint + formID
+
+      const request = {
         method: 'POST',
+        url: dataStore,
+        data: JSON.stringify(fhirQR)
+      };
+      
+      let signedRequest = Signer.sign(request, credentials, serviceInfo);
+      delete signedRequest.headers['host'];
+      return signedRequest;
+  } else if (requestMethod === 'put') {
+      let fhirQR = window.LForms.Util.getFormFHIRData('QuestionnaireResponse', 'R4');
+      let endpoint = dataStore + '/' + responseID;
+      fhirQR.id = responseID;
+      fhirQR.subject = {
+        reference: "Patient/" + patientID
+      }
+      fhirQR.meta.tag = [
+        {
+          "code": "lformsVersion: 30.0.0"
+        },
+        {
+          "code": questionnaireEndpoint + formID
+        }
+      ]
+      // fhirQR.questionnaire = questionnaireEndpoint + formID
+
+      const request = {
+        method: 'PUT',
         url: endpoint,
         data: JSON.stringify(fhirQR)
-        };
-        
-        let signedRequest = Signer.sign(request, credentials, serviceInfo);
-        delete signedRequest.headers['host'];
-        return signedRequest;
-    } else if (requestMethod === 'put') {
-        let fhirQR = window.LForms.Util.getFormFHIRData('QuestionnaireResponse', 'R4');
-        let endpoint = dataStore + resourceType + '/' + param;
-        fhirQR.id = param;
-        fhirQR.subject = {
-          reference: "Patient/" + patientID
-        }
-        fhirQR.meta.tag = [
-          {
-            "code": "lformsVersion: 30.0.0"
-          },
-          {
-            "code": dataStore + formID
-          }
-        ]
-
-        const request = {
-            method: 'PUT',
-            url: endpoint,
-            data: JSON.stringify(fhirQR)
-        };
-        
-        let signedRequest = Signer.sign(request, credentials, serviceInfo);
-        delete signedRequest.headers['host'];
-        signedRequest.headers['content-type'] = 'application/json';
-        return signedRequest;
+      };
+      
+      let signedRequest = Signer.sign(request, credentials, serviceInfo);
+      delete signedRequest.headers['host'];
+      signedRequest.headers['content-type'] = 'application/json';
+      return signedRequest;
     } else if (requestMethod === 'get') {
-        // let searchParam = '?subject=Patient/' + patientID + '&questionnaire=' + formURL
-        let searchParam = '?subject=Patient/' + patientID + '&_tag=' + dataStore + 'Questionnaire/' + formID
-        let endpoint = dataStore + resourceType + searchParam;
-        return Signer.signUrl(endpoint, credentials)
+      // let searchParam = '?subject=Patient/' + patientID + '&questionnaire=' + formURL
+      let searchParam = '?subject=Patient/' + patientID + '&_tag=' + questionnaireEndpoint + formID
+      let searchEndpoint = dataStore + searchParam;
+      return Signer.signUrl(searchEndpoint, credentials)
     }
   }
 
-  // async function getS3Key() {
-  //   let chosenForm = await API.graphql(graphqlOperation(getFormByName, {name: selectedForm}));
-  //   let key = chosenForm.data.getFormByName.items[0].file.key;
-  //   return key
-  // }
-
-  // async function getS3URL() {
-  //   let s3Key = await getS3Key()
-  //   let signedFormURL = await Storage.get(s3Key)
-  //   let formURL = signedFormURL.substring(0, signedFormURL.indexOf('?X-Amz-Algorithm'))
-  //   return formURL
-  // }
-
   async function handleSubmit(e) {
     e.preventDefault();
-
     if (buttonClicked === 'store') {
       sendToHealthlake();
     } else if (buttonClicked === 'loadForm') {
@@ -371,11 +232,11 @@ function Form(props) {
         <div style={{ display: 'flex', alignItems: 'center' }}>
           <FormControl size="small" sx={{ marginRight: 1, minWidth: 250 }}>
             <InputLabel>Select a form</InputLabel>
-            <Select value={selectedForm} label="Select a form" onChange={getFormVersion}>
+            <Select value={selectedForm} label="Select a form" onChange={handleFormSelection}>
               {availableForms.map((form) => <MenuItem key={form} value={form}>{form}</MenuItem>)}
             </Select>
           </FormControl>
-          <TextField type="number" label="Version" size="small" defaultValue={1} style={{width: 80}} InputProps={{inputProps: {min: 1, max: fVersion}}} onChange={(e) => {setVersion(e.target.value)}} />
+          <TextField type="number" label="Version" size="small" defaultValue={1} style={{width: 80}} InputProps={{inputProps: {min: 1, max: formVersion}}} onChange={(e) => {setVersion(e.target.value)}} />
           <Button type='submit' style={{ backgroundColor: 'transparent' }} onClick={() => setButtonClicked('loadForm')}>Load</Button>
         </div>
         <div id="formContainer" style={{ paddingTop: '1em', paddingRight: '1em', paddingBottom: '1em' }}></div>
