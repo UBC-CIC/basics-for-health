@@ -22,5 +22,30 @@
         }
       }
     }
+  },
+  "prod": {
+    "awscloudformation": {
+      "AuthRoleName": "amplify-basics4health-prod-152343-authRole",
+      "UnauthRoleArn": "arn:aws:iam::526808004234:role/amplify-basics4health-prod-152343-unauthRole",
+      "AuthRoleArn": "arn:aws:iam::526808004234:role/amplify-basics4health-prod-152343-authRole",
+      "Region": "ca-central-1",
+      "DeploymentBucketName": "amplify-basics4health-prod-152343-deployment",
+      "UnauthRoleName": "amplify-basics4health-prod-152343-unauthRole",
+      "StackName": "amplify-basics4health-prod-152343",
+      "StackId": "arn:aws:cloudformation:ca-central-1:526808004234:stack/amplify-basics4health-prod-152343/ddd86d90-3932-11ed-ad5a-063da36f8e04",
+      "AmplifyAppId": "d156w8cp6yx4ru"
+    },
+    "categories": {
+      "auth": {
+        "basics4health41656259": {},
+        "userPoolGroups": {}
+      },
+      "function": {
+        "AdminQueries4a61d8cc": {
+          "deploymentBucketName": "amplify-basics4health-prod-152343-deployment",
+          "s3Key": "amplify-builds/AdminQueries4a61d8cc-75784b4146434338654a-build.zip"
+        }
+      }
+    }
   }
 }
