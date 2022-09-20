@@ -1,12 +1,13 @@
 import { useState, useEffect } from 'react';
-import { Collapse, Alert, Button, Box, Stack, TextField, Tabs, Tab, FormControl, InputLabel, Select, MenuItem} from "@mui/material";
+import { Collapse, Alert, Button, Box, Stack, TextField, Tabs, Tab, FormControl, InputLabel, Select, MenuItem } from "@mui/material";
 import { UploadFile } from "@mui/icons-material";
 import { API, graphqlOperation } from 'aws-amplify';
 import axios from 'axios';
 import { createForm } from '../graphql/mutations';
 import { listForms, getFormByName } from '../graphql/queries';
 
-export default function Upload() {
+export default function Upload(props) {
+  const token = props.param
   const [formTitle, setFormTitle] = useState('');
   const [formUser, setFormUser] = useState('');
   const [fieldError, setFieldError] = useState(false);
@@ -52,6 +53,7 @@ export default function Upload() {
 
   async function handleFormUpload(e) {
     e.preventDefault();
+    
     let uploadedFile = document.getElementById('uploadFile');
     if (formTitle === '') {
       setFieldError(true);
@@ -66,7 +68,7 @@ export default function Upload() {
       try {
         axios({
           method: 'post',
-          headers: {'Content-Type': 'application/json'},
+          headers: {'Content-Type': 'application/json', 'Authorization': `Bearer ${token}`},
           url: endpoint,
           data: uploadFile
         }).then(async (response) => {
@@ -109,11 +111,10 @@ export default function Upload() {
       
         axios({
           method: 'post',
-          headers: {'Content-Type': 'application/json'},
+          headers: {'Content-Type': 'application/json', 'Authorization': `Bearer ${token}`},
           url: endpoint,
           data: updateFile
         }).then(async (response) => {
-          console.log(response);
           const formData = {
             input: {
               name: formName,

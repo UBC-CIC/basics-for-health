@@ -16,16 +16,19 @@ Amplify.configure(awsExports);
 function App(props) {
   const client = props.client;
   const [patient, setPatient] = useState('');
+  const [accessToken, setAccessToken] = useState('');
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    getPatient();
+    getData();
   }, []);
 
-  async function getPatient() {
+  async function getData() {
     let pat = await client.patient.read();
     setPatient(pat);
     setLoading(false);
+    let token = client.state.tokenResponse.access_token
+    setAccessToken(token)
   }
 
   if (loading) {
@@ -36,8 +39,8 @@ function App(props) {
     <>
       <Navbar />
       <Routes>
-        <Route path="/" element={<Form param={patient} />} />
-        <Route path="/upload" element={<Upload />} />
+        <Route path="/" element={<Form param={[patient, accessToken]} />} />
+        <Route path="/upload" element={<Upload param={accessToken}/>} />
         <Route path='/admin' element={<Admin />} />
       </Routes>
     </>

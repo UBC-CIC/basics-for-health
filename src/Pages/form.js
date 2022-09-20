@@ -7,7 +7,8 @@ import { Auth, API, graphqlOperation } from 'aws-amplify';
 import { listForms, getFormByName } from '../graphql/queries';
 
 function Form(props) {
-  const patientID = props.param.id;
+  const patientID = props.param[0].id;
+  const token = props.param[1]
   const [formLoaded, setFormLoaded] = useState(false);
   const [availableForms, setAvailableForms] = useState([]);
   const [selectedForm, setSelectedForm] = useState('');
@@ -42,7 +43,7 @@ function Form(props) {
   }
 
   async function patientData() {
-    let name = '<b>Patient Name:</b> &nbsp' + props.param.name[0].given + ' ' + props.param.name[0].family;
+    let name = '<b>Patient Name:</b> &nbsp' + props.param[0].name[0].given + ' ' + props.param[0].name[0].family;
     let id = '<b>Patient ID:</b> &nbsp' + patientID;
     document.getElementById('patientDataContainer').innerHTML = name + ', &nbsp' + id;
   }
@@ -50,9 +51,17 @@ function Form(props) {
   async function loadResponse() {
     let formID = await getFormID();
     let endpoint = baseEndpoint + formID; 
-    axios.get(endpoint).then(async (resp) => {
+    axios({
+      method: 'get',
+      headers: {'Content-Type': 'application/json', 'Authorization': `Bearer ${token}`},
+      url: endpoint,
+    }).then(async (resp) => {
       let endpoint = await httpRequest('get');
-      axios.get(endpoint).then((response) => {
+      axios({
+        method: 'get',
+        headers: {'Content-Type': 'application/json', 'Authorization': `Bearer ${token}`},
+        url: endpoint,
+      }).then((response) => {
         let lhcForm = window.LForms.Util.convertFHIRQuestionnaireToLForms(resp.data, 'R4');
         let formWithUserData = window.LForms.Util.mergeFHIRDataIntoLForms("QuestionnaireResponse", response.data.entry[0].resource, lhcForm, "R4");          
         window.LForms.Util.addFormToPage(formWithUserData, 'formContainer');
@@ -69,7 +78,11 @@ function Form(props) {
   async function sendToHealthlake() { 
     let endpoint = await httpRequest('get');
 
-    axios.get(endpoint).then((resp) => {
+    axios({
+      method: 'get',
+      headers: {'Content-Type': 'application/json', 'Authorization': `Bearer ${token}`},
+      url: endpoint,
+    }).then((resp) => {
       if (resp.data.entry === undefined) {
         storeResponse();
       } else {
@@ -83,7 +96,12 @@ function Form(props) {
   async function updateResponse(resourceID) {
     let request = await httpRequest('put', resourceID);
 
-    axios(request).then((response) => {
+    axios({
+      method: 'put',
+      headers: request.headers,
+      url: request.url,
+      data: request.data
+    }).then((response) => {
       window.scrollTo({top: 0});
       if (response.status === 200) {
         setAlertContent('Answers updated');
@@ -95,7 +113,12 @@ function Form(props) {
   async function storeResponse() {
     let request = await httpRequest('post');
 
-    axios(request).then((response) => {
+    axios({
+      method: 'post',
+      headers: request.headers,
+      url: request.url,
+      data: request.data
+    }).then((response) => {
       window.scrollTo({top: 0});
       if (response.status === 201) {
         setAlertContent('Answers submitted');
@@ -117,7 +140,7 @@ function Form(props) {
 
       const request = {
         method: 'post',
-        headers: {'Content-Type': 'application/json'},
+        headers: {'Content-Type': 'application/json', 'Authorization': `Bearer ${token}`},
         url: qrEndpoint,
         data: JSON.stringify(fhirQR)
       };
@@ -128,7 +151,7 @@ function Form(props) {
       fhirQR.id = responseID;
       const request = {
         method: 'put',
-        headers: {'Content-Type': 'application/json'},
+        headers: {'Content-Type': 'application/json', 'Authorization': `Bearer ${token}`},
         url: endpoint,
         data: JSON.stringify(fhirQR)
       };
