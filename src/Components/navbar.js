@@ -4,7 +4,7 @@ import Sidebar from './sidebar';
 import { Auth } from 'aws-amplify';
 import { useNavigate } from 'react-router-dom';
 import { useEffect } from "react";
-import AdminStatus from "../Helpers/adminStatus";
+import AdminStatus from "../adminStatus";
 
 export default function Navbar() {
   const [admin, setAdmin] = useState(false);

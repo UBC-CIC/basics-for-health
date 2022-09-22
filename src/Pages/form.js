@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import axios from 'axios';
 import { Alert, Collapse, Button, FormControl, InputLabel, Select, MenuItem, TextField } from '@mui/material';
 import SendIcon from '@mui/icons-material/Send';
-import AdminStatus from '../Helpers/adminStatus';
+import AdminStatus from '../adminStatus';
 import { Auth, API, graphqlOperation } from 'aws-amplify';
 import { listForms, getFormByName } from '../graphql/queries';
 
