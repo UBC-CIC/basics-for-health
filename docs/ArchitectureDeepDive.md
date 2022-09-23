@@ -2,7 +2,7 @@
 
 ## Architecture
 
-![Architecture diagram](../docs/images/architecture-diagram.png)
+![Architecture diagram](images/architecture-diagram.png)
 
 ## Description
 
@@ -14,10 +14,12 @@
 
 4. An API call is made to the GraphQL API by the app.
 
-5. The GraphQL API call queries Amazon DynamoDB for the form name, version, and ID.
+5. The GraphQL API call queries Amazon DynamoDB for relevant data about the form.
 
 6. The result of the query is passed back from the API.
 
 7. The result of the query is returned to the app.
 
-8. The app uses the returned data to send a request to the FHIR server to retrieve the appropriate resource.
+8. The app uses the returned data to send an authorized request to the FHIR server to retrieve the appropriate resources.
+
+This flow is for retrieving the forms. Uploading the forms is identical, just in a different order. When uploading, the FHIR resource is first sent to the server before necessary data about the form is stored into the database.

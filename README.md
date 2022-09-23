@@ -12,9 +12,9 @@
 
 # High Level Architecture
 
-The following architecture diagram illustrates the various AWS components utliized to deliver the solution. For an in-depth explanation of the frontend and backend stacks, refer to the [Architecture Deep Dive](docs/ArchitectureDeepDive.md).
+The following architecture diagram illustrates the various AWS components utliized to deliver the solution. For an explanation of the stack, refer to the [Architecture Deep Dive](docs/ArchitectureDeepDive.md).
 
-![Alt text](./docs/images/architecture-diagram.png?)
+![Alt text](./docs/images/architecture-diagram.png)
 
 # Deployment Guide
 

@@ -47,28 +47,28 @@ If you have multiple AWS Profiles, specify one with sufficient admin permissions
 
 This step creates an IAM role called **amplifyconsole-basics4health-backend-role** that will be used on the next step.
 
-The **Deploy to Amplify Console** button will take you to your AWS console to deploy the front-end solution.
+The **Deploy to Amplify Console** button will take you to your AWS console to deploy the solution. Make sure you are logged into your AWS account.
 
 <a href="https://console.aws.amazon.com/amplify/home#/deploy?repo=https://github.com/UBC-CIC/basics-for-health">
     <img src="https://oneclick.amplifyapp.com/button.svg" alt="Deploy to Amplify Console">
 </a>
 
 1. On the AWS console, select your region and click `Connect to GitHub`.
-   ![alt text](images/deployment.png)
-2. Authorize AWS Amplify with your GitHub account.
-   ![alt text](images/deployment2.PNG)
+   ![alt text](images/deployment/deployment.PNG)
+2. Authorize AWS Amplify with your GitHub account (if required).
+   ![alt text](images/deployment/deployment2.PNG)
 3. Select the **amplifyconsole-basics4health-backend-role** we made previously for the deployment role, and then press `Save and Deploy`
-   ![alt text](images/deployment3.png)
+   ![alt text](images/deployment/deployment3.PNG)
 4. The deployment will take a few minutes. Wait until the status of **Verify** is green
-   ![alt text](images/deployment4.png)
-5. Next, on the left side menu, click on Rewrites and redirects and click the `Edit` button. Click and replace the first rule's **source address** (or add a rule if there is none) to `</^((?!\.(css|gif|ico|jpg|js|png|txt|svg|woff|ttf)$).)*$/>`. Replace the **target address** to `/index.html`, and replace the **type** to `200 (Rewrite)`. Add a second rule with the **same source and target address**, but change the **type** to `404 (Rewrite)`. Refer to [AWS's Page on Single Page Apps](https://docs.aws.amazon.com/amplify/latest/userguide/redirects.html#redirects-for-single-page-web-apps-spa) for further information on why that was necessary.
+   ![alt text](images/deployment/deployment4.PNG)
+5. Next, on the left side menu, click on Rewrites and redirects and click the `Edit` button. Click and replace the first rule's **source address** (or add a rule if there is none) to `</^((?!\.(css|gif|ico|jpg|js|png|txt|svg|woff|ttf)$).)*$/>`. Replace the **target address** to `/index.html`, and replace the **type** to `200 (Rewrite)`. Refer to [AWS's Page on Single Page Apps](https://docs.aws.amazon.com/amplify/latest/userguide/redirects.html#redirects-for-single-page-web-apps-spa) for further information on why that was necessary.
     
     It should look like this once you are done:
-    ![alt text](images/deployment5.png)
+    ![alt text](images/deployment/deployment5.PNG)
 
 The app is now deployed!
 
-If you wish to further contribute to this project, install the required packages and dependencies with the following command:
+If you wish to make changes and further contribute to this project, install the required packages and dependencies with the following command:
 
 ```bash
 npm install
