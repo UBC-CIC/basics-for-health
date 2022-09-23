@@ -39,7 +39,7 @@ Before deploying the Amplify project we need to create an IAM Role that will giv
 aws cloudformation deploy --template-file cfn-amplifyRole.yaml --stack-name amplifyconsole-basics4health-backend-role --capabilities CAPABILITY_NAMED_IAM
 ```
 
-If you have multiple AWS Profiles, specify one with sufficient admin permissions by appending the following text to the end of the command, replacing the profile name with the profile you would like to use for the solution.
+If you have multiple AWS Profiles, use the one with sufficient admin permissions by appending the following text to the end of the command, replacing the profile name with the profile you would like to use for the solution.
 
 ```bash
 --profile [PROFILE NAME]
