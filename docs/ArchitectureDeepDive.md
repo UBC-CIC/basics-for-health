@@ -1,25 +1,42 @@
-# Backend and Frontend Stack Deep Dive
+# Stack Deep Dive
 
 ## Architecture
 
 ![Architecture diagram](images/architecture-diagram.png)
 
-## Description
+## EHR Launch + Authorization Flow
 
-1. User launches the application from an EHR.
+1. User launches the application from an EHR
 
-2. The selected patient's data is retrieved from the FHIR server along with the necessary authorization tokens.
+2. The selected patient's data (name, id) is retrieved from the EHR
 
-3. The user signs-in to access the application through Amazon Cognito, which assigns them different permissions depending on if they are an administrator or not.
+3. The application makes a request to the FHIR server for its SMART configuration metadata
 
-4. An API call is made to the GraphQL API by the app.
+4. The FHIR server returns a document that contains the authorization server's endpoint
 
-5. The GraphQL API call queries Amazon DynamoDB for relevant data about the form.
+5. The application makes an authorization request to the authorization server, as well as what data it wishes to access (as defined in the scope)
 
-6. The result of the query is passed back from the API.
+6. The authorization server returns an authorization code
 
-7. The result of the query is returned to the app.
+7. The application exchanges the authorization code for an access token, which is used to authorize requests to the FHIR server
 
-8. The app uses the returned data to send an authorized request to the FHIR server to retrieve the appropriate resources.
+8. The user then signs in to the application through Amazon Cognito, which assigns them different permissions depending on if they are an admin user or not
 
-This flow is for retrieving the forms. Uploading the forms is identical, just in a different order. When uploading, the FHIR resource is first sent to the server before necessary data about the form is stored into the database.
+## Uploading Forms
+
+9. When the user uploads their own forms in the app, the FHIR resource is created and stored on the FHIR server
+
+10. The server responds to the request with data about the resource
+
+11. Certain fields in the server response are then stored into Amazon DynamoDB
+
+
+## Filling Out Forms
+
+12. The application queries the database for information about the form that has been selected to be filled out
+
+13. A request for the resource is made to the FHIR server
+
+14. Another request is made to the server for the answers to the form (if they exist)
+
+15. After the user fills out the form and submits it, the answers (QuestionnaireResponse resource) are stored on the FHIR server
