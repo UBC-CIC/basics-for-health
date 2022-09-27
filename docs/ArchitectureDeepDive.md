@@ -24,19 +24,19 @@
 
 ## Uploading Forms
 
-9. When the user uploads their own forms in the app, the FHIR resource is created and stored on the FHIR server
+9. When the user uploads their own forms in the app, the FHIR Questionnaire resource is created and stored on the FHIR server
 
-10. The server responds to the request with data about the resource
+10. The server responds to the request with data about the created resource, including its unique ID
 
-11. Certain fields in the server response are then stored into Amazon DynamoDB
+11. Relevant data about the form (name, version, ID, author, if another user is given access) is then stored into Amazon DynamoDB
 
 
 ## Filling Out Forms
 
-12. The application queries the database for information about the form that has been selected to be filled out
+12. To render the form that has been selected to be filled out, the application first queries the database to find the ID of the resource that corresponds to the version of the form selected
 
-13. A request for the resource is made to the FHIR server
+13. A request to get the Questionnaire resource with the appropriate ID is made to the FHIR server
 
-14. Another request is made to the server for the answers to the form (if they exist)
+14. A second request is made to the server to get the previous answers (QuestionnaireResponse resource) to the form. If the user has filled out the form before, the answers will be loaded with it, otherwise a blank form will be rendered
 
 15. After the user fills out the form and submits it, the answers (QuestionnaireResponse resource) are stored on the FHIR server
