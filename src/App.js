@@ -1,7 +1,7 @@
-import Navbar from './components/navbar';
-import Form from './pages/form';
-import Upload from './pages/upload';
-import Admin from './pages/admin';
+import Navbar from './Components/navbar';
+import Form from './Pages/form';
+import Upload from './Pages/upload';
+import Admin from './Pages/admin';
 import { Routes, Route } from 'react-router-dom'
 import { Amplify } from 'aws-amplify';
 import { withAuthenticator } from '@aws-amplify/ui-react';
