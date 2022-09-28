@@ -18,7 +18,7 @@ function Form(props) {
   const [version, setVersion] = useState();
   const [formVersion, setFormVersion] = useState(1);
 
-  const baseEndpoint = 'http://localhost:4004/hapi-fhir-jpaserver/fhir/Questionnaire/';
+  const baseEndpoint = process.env.REACT_APP_EHR_ENDPOINT + '/Questionnaire/';
 
   useEffect(() => {
     fetchForms();
@@ -128,7 +128,7 @@ function Form(props) {
   }
 
   async function httpRequest(requestMethod, responseID) {
-    let qrEndpoint = 'http://localhost:4004/hapi-fhir-jpaserver/fhir/QuestionnaireResponse';
+    let qrEndpoint = process.env.REACT_APP_EHR_ENDPOINT + '/QuestionnaireResponse';
     let formID = await getFormID()
 
     if (requestMethod === 'post') {

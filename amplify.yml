@@ -12,6 +12,8 @@ frontend:
         - npm ci
     build:
       commands:
+        - echo "REACT_APP_EHR_ENDPOINT=$REACT_APP_EHR_ENDPOINT" >> .env
+        - echo "REACT_APP_EHR_CLIENT_ID=$REACT_APP_EHR_CLIENT_ID" >> .env
         - npm run build
   artifacts:
     baseDirectory: build

@@ -24,7 +24,7 @@ export default function Upload(props) {
   const [availableForms, setAvailableForms] = useState([]);
   const [selectedForm, setSelectedForm] = useState('');
 
-  const endpoint = 'http://localhost:4004/hapi-fhir-jpaserver/fhir/Questionnaire';
+  const endpoint = process.env.REACT_APP_EHR_ENDPOINT + '/Questionnaire';
 
   useEffect(() => {
     async function existingForms() {
