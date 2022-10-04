@@ -8,11 +8,13 @@ import reportWebVitals from './reportWebVitals';
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 const ehrClientID = process.env.REACT_APP_EHR_CLIENT_ID
+const ehrClientSecret = process.env.REACT_APP_EHR_CLIENT_SECRET
 
 const smartFhirLaunch = () => {
   FHIR.oauth2.init({
     clientId: ehrClientID,
-    scope: 'launch patient/Patient.read patient/Questionnaire.read patient/Questionnaire.write patient/QuestionnaireResponse.read patient/QuestionnaireResponse.write openid profile online_access'
+    clientSecret: ehrClientSecret,
+    scope: 'launch patient/Patient.read patient/Questionnaire.read patient/Questionnaire.write patient/QuestionnaireResponse.read patient/QuestionnaireResponse.write openid profile online_access',
   })
   .then(client => {
     root.render(

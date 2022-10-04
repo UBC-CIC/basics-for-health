@@ -7,11 +7,10 @@ Before you deploy, you must have the following accounts:
 
 You must also have the following installed on your device:
 
-- [Docker Desktop](https://www.docker.com/products/docker-desktop/)
 - [Git](https://git-scm.com/downloads)
 - [AWS CLI](https://aws.amazon.com/cli/)
 
-Once you have downloaded docker desktop, follow the installation instructions for the FHIR dev sandbox [here](https://github.com/smart-on-fhir/smart-dev-sandbox).
+**The application is configured to launch from an EHR. If you do not have access to one, [this](https://launch.smarthealthit.org/?auth_error=&fhir_version_2=r4&iss=&launch_ehr=1&launch_url=&patient=&prov_skip_auth=1&provider=&pt_skip_auth=1&public_key=&sde=&sim_ehr=1&token_lifetime=15&user_pt=) simulates an EHR and can be used to test the app.**
 
 # Clone The Repository
 
@@ -61,12 +60,25 @@ The **Deploy to Amplify Console** button will take you to your AWS console to de
    ![alt text](images/deployment/deployment3.PNG)
 4. The deployment will take a few minutes. Wait until the status of **Verify** is green
    ![alt text](images/deployment/deployment4.PNG)
-5. Next, on the left side menu, click on Rewrites and redirects and click the `Edit` button. Click and replace the first rule's **source address** (or add a rule if there is none) to `</^((?!\.(css|gif|ico|jpg|js|png|txt|svg|woff|ttf)$).)*$/>`. Replace the **target address** to `/index.html`, and replace the **type** to `200 (Rewrite)`. Refer to [AWS's Page on Single Page Apps](https://docs.aws.amazon.com/amplify/latest/userguide/redirects.html#redirects-for-single-page-web-apps-spa) for further information on why that was necessary.
+5. On the left side menu, click on `Rewrites and redirects` and click the `Edit` button. Click and replace the first rule's **source address** (or add a rule if there is none) to `</^((?!\.(css|gif|ico|jpg|js|png|txt|svg|woff|ttf)$).)*$/>`. Replace the **target address** to `/index.html`, and replace the **type** to `200 (Rewrite)`. Refer to [AWS's Page on Single Page Apps](https://docs.aws.amazon.com/amplify/latest/userguide/redirects.html#redirects-for-single-page-web-apps-spa) for further information on why that was necessary.
     
     It should look like this once you are done:
     ![alt text](images/deployment/deployment5.PNG)
 
+6. On the left side menu, click on `Environment variables` and then the `Manage variables` button. Add the following and save the change. If you are using the demo EHR, the endpoint is https://launch.smarthealthit.org/v/r4/fhir
+   ```bash
+   Variable: REACT_APP_EHR_ENDPOINT    Value: [Your FHIR endpoint]
+   ```
+   ![alt text](images/deployment/deployment6.PNG)
+
 The app is now deployed!
+
+The next step is to register the application with your EHR. Doing so will provide a unique Client ID associated with the app, along with a Client Secret. **If you are using the demo EHR, any string for the client ID and secret will work as its not validated on the test server.** Add the following environment variables to Amplify:
+```bash
+Variable: REACT_APP_EHR_CLIENT_ID	Value: [Your Client ID]
+Variable: REACT_APP_EHR_CLIENT_SECRET	Value: [Your Client Secret]
+```
+
 
 If you wish to make changes and further contribute to this project, install the required packages and dependencies with the following command:
 

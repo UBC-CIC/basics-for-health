@@ -1,24 +1,19 @@
 # User Guide
 
-**Before Continuing with this User Guide, please make sure you have deployed the stack.**
+**Before Continuing with this User Guide, please make sure you have deployed the application.**
 
 - [Deployment Guides](./DeploymentGuide.md)
 
 | Index                              | Description                            |
 | :--------------------------------- | :------------------------------------- |
-| [Docker](#docker)                  | Docker container for app launch        |
+| [Demo EHR](#demo-ehr)              | Simulated EHR for app launch           |
 | [Main Page](#main-page)            | Fill out forms                         |
 | [Upload Form](#upload-form)        | Upload new / update existing forms     |
 | [Add Admin User](#add-admin-user)  | Set other users as admins              |
 
-## Docker
+## Demo EHR
 
-**The application is configured to launch from an EHR. The docker container installed during the deployment guide simulates an EHR and is where the application will be launched from.**
-
-Start the docker container as described [here](https://github.com/smart-on-fhir/smart-dev-sandbox).
-
-Click on `Launch a SMART App`.
-    ![alt text](images/userGuide/user-guide.PNG)
+The following steps are for if you are using the demo EHR to launch the app. As this is a public test server, **resources are removed from the server after a day**.
 
 Scroll down and enter the app URL in the `App Launch URL` field.
     ![alt text](images/userGuide/user-guide2.PNG)

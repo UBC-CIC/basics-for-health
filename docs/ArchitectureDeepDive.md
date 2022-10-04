@@ -1,8 +1,13 @@
 # Stack Deep Dive
 
+
 ## Architecture
 
 ![Architecture diagram](images/architecture-diagram.png)
+
+## Flow Diagram
+
+![Flow diagram](images/flow-diagram.png)
 
 ## EHR Launch + Authorization Flow
 

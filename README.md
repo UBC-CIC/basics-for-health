@@ -56,6 +56,8 @@ For instructions on how to navigate the web app interface, refer to the [Web App
 ├── .gitignore
 ├── .graphqlconfig.yml
 ├── .amplify.yml
+├── b4h-questionnaire.json
+├── cfn-amplifyRole.yaml
 ├── package-lock.json
 ├── package.json
 └── README.md
