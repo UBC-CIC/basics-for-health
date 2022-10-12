@@ -72,6 +72,7 @@ For instructions on how to navigate the web app interface, refer to the [Web App
    2. **`/graphql`**: Contains files for mutations, queries and the schema
    3. **`/pages`**: Files for each individual page of the app
    4. **`/adminStatus.js`**: File for checking if the user is an admin
+4. **`/b4h-questionnaire.json`**: File containing a FHIR Questionnaire resource
 
 # Changelog
 N/A

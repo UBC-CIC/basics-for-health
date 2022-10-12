@@ -14,7 +14,7 @@ const smartFhirLaunch = () => {
   FHIR.oauth2.init({
     clientId: ehrClientID,
     clientSecret: ehrClientSecret,
-    scope: 'launch patient/Patient.read patient/Questionnaire.read patient/Questionnaire.write patient/QuestionnaireResponse.read patient/QuestionnaireResponse.write openid profile online_access',
+    scope: 'launch patient/Patient.read user/Questionnaire.read user/Questionnaire.write user/QuestionnaireResponse.read user/QuestionnaireResponse.write openid profile online_access',
   })
   .then(client => {
     root.render(

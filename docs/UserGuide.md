@@ -13,7 +13,7 @@
 
 ## Demo EHR
 
-The following steps are for if you are using the demo EHR to launch the app. As this is a public test server, **resources are removed from the server after a day**.
+The following steps are for if you are using the demo EHR to launch the app. As this is a public test server, **resources are removed from the server after a day**. Also, after submitting a form it may take time for this server to receive the request, so the answers for the form may not load immediately the first time.
 
 Scroll down and enter the app URL in the `App Launch URL` field.
     ![alt text](images/userGuide/user-guide2.PNG)
@@ -51,6 +51,8 @@ When adding questions, please use LOINC codes when possible.
 After you are finished building your form, click `Export` to download it as a file; this is what will be uploaded to the application.
 
 If updating an existing form, click `Import` and select the one you wish to edit. After you make your changes, download it again and upload it to the update page of the application.
+
+**Note**: In this repository, there is a JSON file attached (`/b4h-questionnaire.json`) that contains a FHIR Questionnaire resource. This was created specifically for the sponsor of this project, but may be used to upload to the application when first trying it out.
 
 ## Add Admin User
 

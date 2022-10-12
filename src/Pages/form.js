@@ -75,7 +75,7 @@ function Form(props) {
     })
   }
 
-  async function sendToHealthlake() { 
+  async function checkResponseExists() { 
     let endpoint = await httpRequest('get');
 
     axios({
@@ -180,7 +180,7 @@ function Form(props) {
   async function handleSubmit(e) {
     e.preventDefault();
     if (buttonClicked === 'store') {
-      sendToHealthlake();
+      checkResponseExists();
     } else if (buttonClicked === 'loadForm') {
       loadResponse();
     }
