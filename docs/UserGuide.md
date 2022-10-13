@@ -7,6 +7,7 @@
 | Index                              | Description                            |
 | :--------------------------------- | :------------------------------------- |
 | [Demo EHR](#demo-ehr)              | Simulated EHR for app launch           |
+| [Form Builder](#form-builder)      | Tool for creating the FHIR forms       |
 | [Main Page](#main-page)            | Fill out forms                         |
 | [Upload Form](#upload-form)        | Upload new / update existing forms     |
 | [Add Admin User](#add-admin-user)  | Set other users as admins              |
@@ -19,6 +20,20 @@ Scroll down and enter the app URL in the `App Launch URL` field.
     ![alt text](images/userGuide/user-guide2.PNG)
 
 Log in as the provided practitioner and select a patient from the list. The sign in/sign up screen for the app will then be displayed.
+
+## Form Builder
+
+This application does not create the FHIR-based forms themselves. To actually create these forms, online tools exist for building FHIR questionnaires. The one we used can be found [here](https://lhcformbuilder.nlm.nih.gov/previous/).
+    ![alt text](images/userGuide/user-guide7.PNG)
+
+When adding questions, please use LOINC codes when possible.
+    ![alt text](images/userGuide/user-guide8.PNG)
+
+After you are finished building your form, click `Export` to download it as a file; this is what will be uploaded to the application.
+
+If updating an existing form, click `Import` and select the one you wish to edit. After you make your changes, download it again and upload it to the update page of the application.
+
+**Note**: In this repository, there is a JSON file attached (`/b4h-questionnaire.json`) that contains a FHIR Questionnaire resource. This was created specifically for the sponsor of this project, but may be used to upload to the application when first trying it out.
 
 ## Main Page
 
@@ -41,18 +56,6 @@ When uploading a new one, a name for the form is required; this is what will be 
 
 When updating an existing one, the user must select the form they are updating from the dropdown menu.
     ![alt text](images/userGuide/user-guide6.PNG)
-
-To actually create these forms, online tools exist for building FHIR questionnaires. The one we used can be found [here](https://lhcformbuilder.nlm.nih.gov/previous/).
-    ![alt text](images/userGuide/user-guide7.PNG)
-
-When adding questions, please use LOINC codes when possible.
-    ![alt text](images/userGuide/user-guide8.PNG)
-
-After you are finished building your form, click `Export` to download it as a file; this is what will be uploaded to the application.
-
-If updating an existing form, click `Import` and select the one you wish to edit. After you make your changes, download it again and upload it to the update page of the application.
-
-**Note**: In this repository, there is a JSON file attached (`/b4h-questionnaire.json`) that contains a FHIR Questionnaire resource. This was created specifically for the sponsor of this project, but may be used to upload to the application when first trying it out.
 
 ## Add Admin User
 
