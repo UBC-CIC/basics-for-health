@@ -7,7 +7,6 @@ import { Amplify } from 'aws-amplify';
 import { withAuthenticator } from '@aws-amplify/ui-react';
 
 import '@aws-amplify/ui-react/styles.css';
-import 'react-toastify/dist/ReactToastify.css';
 
 import awsExports from './aws-exports';
 import { useEffect, useState } from 'react';
