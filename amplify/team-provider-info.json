@@ -45,6 +45,10 @@
           "deploymentBucketName": "amplify-basics4health-prod-152343-deployment",
           "s3Key": "amplify-builds/AdminQueries4a61d8cc-75784b4146434338654a-build.zip"
         }
+      },
+      "api": {
+        "AdminQueries": {},
+        "b4hGraphQL": {}
       }
     }
   }
