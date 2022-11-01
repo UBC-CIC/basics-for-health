@@ -7,8 +7,10 @@ import { Auth, API, graphqlOperation } from 'aws-amplify';
 import { listForms, getFormByName } from '../graphql/queries';
 
 function Form(props) {
-  const patientID = props.param[0].id;
-  const token = props.param[1]
+  const patient = props.param[0];
+  const practitioner = props.param[1];
+  const patientID = patient.id;
+  const token = props.param[2]
   const [formLoaded, setFormLoaded] = useState(false);
   const [availableForms, setAvailableForms] = useState([]);
   const [selectedForm, setSelectedForm] = useState('');
@@ -18,7 +20,7 @@ function Form(props) {
   const [version, setVersion] = useState();
   const [formVersion, setFormVersion] = useState(1);
 
-  const baseEndpoint = process.env.REACT_APP_EHR_ENDPOINT + '/Questionnaire/';
+  const baseEndpoint = 'https://launch.smarthealthit.org/v/r4/fhir/Questionnaire/';
 
   useEffect(() => {
     fetchForms();
@@ -62,10 +64,11 @@ function Form(props) {
         headers: {'Content-Type': 'application/json', 'Authorization': `Bearer ${token}`},
         url: endpoint,
       }).then((response) => {
-        let lhcForm = window.LForms.Util.convertFHIRQuestionnaireToLForms(resp.data, 'R4');
-        let formWithUserData = window.LForms.Util.mergeFHIRDataIntoLForms("QuestionnaireResponse", response.data.entry[0].resource, lhcForm, "R4");          
-        window.LForms.Util.addFormToPage(formWithUserData, 'formContainer');
-        setFormLoaded(true);
+        console.log(response.data)
+        // let lhcForm = window.LForms.Util.convertFHIRQuestionnaireToLForms(resp.data, 'R4');
+        // let formWithUserData = window.LForms.Util.mergeFHIRDataIntoLForms("QuestionnaireResponse", response.data.entry[0].resource, lhcForm, "R4");          
+        // window.LForms.Util.addFormToPage(formWithUserData, 'formContainer');
+        // setFormLoaded(true);
       }).catch((error) => {
         window.LForms.Util.addFormToPage(resp.data, 'formContainer');
         setFormLoaded(true);
@@ -119,6 +122,7 @@ function Form(props) {
       url: request.url,
       data: request.data
     }).then((response) => {
+      console.log(response)
       window.scrollTo({top: 0});
       if (response.status === 201) {
         setAlertContent('Answers submitted');
@@ -128,7 +132,7 @@ function Form(props) {
   }
 
   async function httpRequest(requestMethod, responseID) {
-    let qrEndpoint = process.env.REACT_APP_EHR_ENDPOINT + '/QuestionnaireResponse';
+    let qrEndpoint = 'https://launch.smarthealthit.org/v/r4/fhir';
     let formID = await getFormID()
 
     if (requestMethod === 'post') {
@@ -137,28 +141,61 @@ function Form(props) {
         reference: "Patient/" + patientID
       }
       fhirQR.questionnaire = baseEndpoint + formID
-
+      let bundle = {
+        "resourceType": "Bundle",
+        "meta": {
+          "tag": [
+            {
+              "system": "https://ehealthbc.ca/NamingSystem/eforms/correlationId",
+              "code": "982d66ef-2fe1-4a74-a050-c35b61bdad2c"
+            }
+          ]
+        },
+        "type": "collection",
+        "entry": [
+          {patient},
+          {practitioner},
+          {fhirQR}
+        ]
+      }
       const request = {
         method: 'post',
         headers: {'Content-Type': 'application/json', 'Authorization': `Bearer ${token}`},
         url: qrEndpoint,
-        data: JSON.stringify(fhirQR)
+        data: bundle
       };
       return request;
     } else if (requestMethod === 'put') {
       let endpoint = qrEndpoint + '/' + responseID;
       let fhirQR = window.LForms.Util.getFormFHIRData('QuestionnaireResponse', 'R4');
       fhirQR.id = responseID;
+      let bundle = {
+        "resourceType": "Bundle",
+        "meta": {
+          "tag": [
+            {
+              "system": "https://ehealthbc.ca/NamingSystem/eforms/correlationId",
+              "code": "982d66ef-2fe1-4a74-a050-c35b61bdad2c"
+            }
+          ]
+        },
+        "type": "collection",
+        "entry": [
+          {patient},
+          {practitioner},
+          {fhirQR}
+        ]
+      }
       const request = {
         method: 'put',
         headers: {'Content-Type': 'application/json', 'Authorization': `Bearer ${token}`},
         url: endpoint,
-        data: JSON.stringify(fhirQR)
+        data: bundle
       };
       return request;
     } else if (requestMethod === 'get') {
-      let searchParam = '?subject=Patient/' + patientID + '&questionnaire=' + baseEndpoint + formID
-      let searchEndpoint = qrEndpoint + searchParam;
+      // let searchParam = '?subject=Patient/' + patientID + '&questionnaire=' + baseEndpoint + formID
+      let searchEndpoint = qrEndpoint + "/Bundle/1427599";
       return searchEndpoint
     }
   }
@@ -180,7 +217,7 @@ function Form(props) {
   async function handleSubmit(e) {
     e.preventDefault();
     if (buttonClicked === 'store') {
-      checkResponseExists();
+      storeResponse();
     } else if (buttonClicked === 'loadForm') {
       loadResponse();
     }
