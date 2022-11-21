@@ -29,7 +29,8 @@ export default function Upload(props) {
   useEffect(() => {
     async function existingForms() {
       try {
-        let forms = await API.graphql(graphqlOperation(listForms));    
+        let user = await Auth.currentAuthenticatedUser();
+        let forms = await API.graphql(graphqlOperation(listForms, {filter: {owner: {eq: user.username}}}));   
         let formNames = [...new Set(forms.data.listForms.items.map((form)=>form.name))];
         setAvailableForms(formNames);
       } catch (error) {
