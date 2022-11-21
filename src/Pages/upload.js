@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { Collapse, Alert, Button, Box, Stack, TextField, Tabs, Tab, FormControl, InputLabel, Select, MenuItem } from "@mui/material";
 import { UploadFile } from "@mui/icons-material";
-import { API, graphqlOperation } from 'aws-amplify';
+import { API, graphqlOperation, Auth } from 'aws-amplify';
 import axios from 'axios';
 import { createForm } from '../graphql/mutations';
 import { listForms, getFormByName } from '../graphql/queries';
@@ -29,7 +29,8 @@ export default function Upload(props) {
   useEffect(() => {
     async function existingForms() {
       try {
-        let forms = await API.graphql(graphqlOperation(listForms));    
+        let user = await Auth.currentAuthenticatedUser();
+        let forms = await API.graphql(graphqlOperation(listForms, {filter: {owner: {eq: user.username}}}));    
         let formNames = [...new Set(forms.data.listForms.items.map((form)=>form.name))];
         setAvailableForms(formNames);
       } catch (error) {
@@ -54,6 +55,7 @@ export default function Upload(props) {
   async function handleFormUpload(e) {
     e.preventDefault();
     
+    let user = await Auth.currentAuthenticatedUser();
     let uploadedFile = document.getElementById('uploadFile');
     if (formTitle === '') {
       setFieldError(true);
@@ -77,6 +79,7 @@ export default function Upload(props) {
               name: formTitle,
               version: 1,
               otherUser: formUser,
+              owner: user.username,
               formID: response.data.id
             }
           };

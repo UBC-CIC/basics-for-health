@@ -31,7 +31,7 @@ function Form(props) {
       let isAdmin = await AdminStatus();
       let forms;
       if (isAdmin) {
-        forms = await API.graphql(graphqlOperation(listForms));
+        forms = await API.graphql(graphqlOperation(listForms, {filter: {owner: {eq: user.username}}}));
       } else {
         forms = await API.graphql(graphqlOperation(listForms, {filter: {otherUser: {eq: user.username}}}));
       }
